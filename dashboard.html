@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ Flex SMS Live Feed Hub - Ultra-Fast SMS & OTP Stream</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070a12;
+      --card-bg: #0f172a;
+      --card-border: #1e293b;
+      --card-hover: #1e2942;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.25);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #64748b;
+      --font-sans: 'Outfit', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px 22px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .brand-text h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-text p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-badge.disconnected {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .status-badge.disconnected .status-dot {
+      background-color: #ef4444;
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    /* Buttons */
+    .btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: #334155;
+      border-color: #475569;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-toggle.active {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #34d399;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.5);
+    }
+
+    .btn-force {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-color: #fbbf24;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-force:hover {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    /* Auto-Refresh Bar */
+    .autorefresh-bar {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 10px 18px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .autorefresh-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pulse-ring {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-ring-anim 1s infinite;
+    }
+
+    @keyframes pulse-ring-anim {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .autorefresh-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .autorefresh-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .select-interval {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Search & Keyword Section */
+    .search-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-input-wrap input {
+      width: 100%;
+      background: #0b1120;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 16px 12px 42px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+
+    /* Chips */
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .chips-label {
+      font-size: 0.78rem;
+      color: var(--text-dark);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .chip {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .chip:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .chip.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent);
+      color: #38bdf8;
+    }
+
+    /* Stats Strip */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .stat-icon.blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+    .stat-info h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .stat-info p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Feed Controls */
+    .feed-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feed-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .service-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .view-toggles {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Feed Grid */
+    #feed-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Table View */
+    .table-container {
+      overflow-x: auto;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: #0f172a;
+      padding: 14px 16px;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    /* Card Item */
+    .sms-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sms-card:hover {
+      border-color: #334155;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .sms-card.new-arrival {
+      animation: arrivalPulse 2s ease forwards;
+    }
+
+    @keyframes arrivalPulse {
+      0% {
+        border-color: #10b981;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        transform: scale(1.01);
+      }
+      100% {
+        border-color: var(--card-border);
+        box-shadow: none;
+        transform: scale(1);
+      }
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .country-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+
+    .time-badge {
+      font-size: 0.78rem;
+      color: var(--text-dark);
+      font-family: var(--font-mono);
+    }
+
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .card-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .number-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .number-text {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .otp-display-box {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 2px dashed #0284c7;
+      border-radius: 12px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+    }
+
+    .otp-code {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 0.15em;
+      font-family: var(--font-mono);
+    }
+
+    .sms-message-box {
+      background: #090e1a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .sms-message-text {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .btn-copy {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+      background: #334155;
+      color: #fff;
+      border-color: #475569;
+    }
+
+    .btn-copy.copied {
+      background: #10b981 !important;
+      color: #fff !important;
+      border-color: #10b981 !important;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(120px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 9999;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px dashed var(--card-border);
+      border-radius: 18px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>Flex SMS Live Feed Hub</h1>
+          <p>Real-Time Portal Stream &bull; Permanent Telegram Filter</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div id="status-pill" class="status-badge">
+          <span class="status-dot"></span>
+          <span id="status-text">CONNECTING...</span>
+        </div>
+        <button id="btn-sound" class="btn btn-toggle active" title="Toggle audio chime on new SMS">
+          🔔 Sound: ON
+        </button>
+        <button id="btn-autocopy-num" class="btn btn-toggle" title="Auto-copy incoming phone numbers">
+          📋 Auto-Copy Number
+        </button>
+        <button id="btn-autocopy-otp" class="btn btn-toggle active" title="Auto-copy incoming OTP codes">
+          🔑 Auto-Copy Code
+        </button>
+      </div>
+    </header>
+
+    <!-- Auto-Refresh & Force Fetch Bar -->
+    <div class="autorefresh-bar">
+      <div class="autorefresh-info">
+        <div class="pulse-ring"></div>
+        <span class="autorefresh-label">Auto-Refresh: ACTIVE</span>
+        <span style="font-size:0.8rem; color:var(--text-muted);">Syncing every <span id="interval-display" style="color:#38bdf8; font-weight:700;">1.0s</span></span>
+      </div>
+      <div class="autorefresh-actions">
+        <select id="select-interval" class="select-interval" title="Change Auto-Refresh Speed">
+          <option value="500">⚡ 0.5s (Turbo)</option>
+          <option value="1000" selected>⏱️ 1.0s (Recommended)</option>
+          <option value="2000">⏱️ 2.0s (Normal)</option>
+        </select>
+        <button id="btn-toggle-autorefresh" class="btn btn-toggle active">
+          🔄 Auto-Refresh: ON
+        </button>
+        <button id="btn-force-refresh" class="btn btn-force" title="Immediately fetch from portal right now without waiting">
+          ⚡ Force Fetch Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Search & Keyword Filter Bar -->
+    <div class="search-card">
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="keyword-input" value="Telegram" placeholder="Search keyword (e.g. Telegram, WhatsApp, Google)...">
+        </div>
+        <button id="btn-apply-keyword" class="btn btn-primary">
+          ⚡ Apply Search
+        </button>
+        <button id="btn-save-default" class="btn" title="Save this keyword permanently in config">
+          💾 Save as Permanent
+        </button>
+        <button id="btn-clear-keyword" class="btn">
+          ❌ Show All
+        </button>
+      </div>
+      <div class="chips-row">
+        <span class="chips-label">Quick Filters:</span>
+        <span class="chip active" data-kw="Telegram">Telegram (Permanent)</span>
+        <span class="chip" data-kw="">All SMS</span>
+        <span class="chip" data-kw="WhatsApp">WhatsApp</span>
+        <span class="chip" data-kw="Google">Google</span>
+        <span class="chip" data-kw="Microsoft">Microsoft</span>
+        <span class="chip" data-kw="Facebook">Facebook</span>
+        <span class="chip" data-kw="TikTok">TikTok</span>
+        <span class="chip" data-kw="IMO">IMO</span>
+        <span class="chip" data-kw="Binance">Binance</span>
+      </div>
+    </div>
+
+    <!-- Stats Strip -->
+    <div class="stats-strip">
+      <div class="stat-box">
+        <div class="stat-icon blue">📨</div>
+        <div class="stat-info">
+          <h3 id="stat-total">0</h3>
+          <p>Total Captured</p>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-icon green">🔑</div>
+        <div class="stat-info">
+          <h3 id="stat-otps">0</h3>
+          <p>OTP Codes Ready</p>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-icon purple">🌍</div>
+        <div class="stat-info">
+          <h3 id="stat-countries">0</h3>
+          <p>Unique Countries</p>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-icon orange">⚡</div>
+        <div class="stat-info">
+          <h3 id="stat-speed">&lt;50ms</h3>
+          <p>SSE Real-time</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed Controls -->
+    <div class="feed-controls">
+      <div class="feed-title">
+        <span>Incoming Telegram Stream</span>
+        <span id="active-kw-badge" class="service-badge">FILTER: "Telegram"</span>
+      </div>
+      <div class="view-toggles">
+        <button id="btn-view-cards" class="btn btn-toggle active">🗂️ Cards</button>
+        <button id="btn-view-table" class="btn btn-toggle">📋 Table</button>
+        <button id="btn-export-csv" class="btn">📥 Export CSV</button>
+        <button id="btn-clear-feed" class="btn btn-danger">🗑️ Clear Feed</button>
+      </div>
+    </div>
+
+    <!-- Cards Feed View -->
+    <div id="feed-container"></div>
+
+    <!-- Table Feed View -->
+    <div id="table-wrap" class="table-container" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Country</th>
+            <th>Phone Number</th>
+            <th>OTP Code</th>
+            <th>Service</th>
+            <th>Message</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state">
+      <div class="icon">📡</div>
+      <h3>Listening for Telegram SMS...</h3>
+      <p>Dual engines are actively syncing. Click 'Force Fetch Now' anytime for instant sync.</p>
+    </div>
+  </div>
+
+  <div id="toast">
+    <span id="toast-icon">📋</span>
+    <span id="toast-msg">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    let records = [];
+    let autoRefreshActive = true;
+    let refreshIntervalMs = 1000;
+    let refreshTimer = null;
+    let soundEnabled = true;
+    let autoCopyNumber = false;
+    let autoCopyOtp = true;
+    let currentView = 'cards';
+    let activeKeyword = 'Telegram';
+    let seenSignatures = new Set();
+    let uniqueCountries = new Set();
+    let totalOtps = 0;
+    let evtSource = null;
+
+    const feedContainer = document.getElementById('feed-container');
+    const tableWrap = document.getElementById('table-wrap');
+    const tableBody = document.getElementById('table-body');
+    const emptyState = document.getElementById('empty-state');
+    const statusPill = document.getElementById('status-pill');
+    const statusText = document.getElementById('status-text');
+    const keywordInput = document.getElementById('keyword-input');
+    const activeKwBadge = document.getElementById('active-kw-badge');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-msg');
+
+    const statTotal = document.getElementById('stat-total');
+    const statOtps = document.getElementById('stat-otps');
+    const statCountries = document.getElementById('stat-countries');
+    const statSpeed = document.getElementById('stat-speed');
+
+    let audioCtx = null;
+    function playChime() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.24);
+      } catch (e) {}
+    }
+
+    let toastTimeout = null;
+    function showToast(text, icon = '📋') {
+      document.getElementById('toast-icon').textContent = icon;
+      toastMsg.textContent = text;
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    async function copyToClipboard(text, label = 'Text') {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        showToast(`Copied ${label}: ${text}`);
+        return true;
+      } catch (err) {
+        showToast(`Failed to copy: ${err}`, '❌');
+        return false;
+      }
+    }
+
+    function handleCopyClick(btn, text, label) {
+      copyToClipboard(text, label);
+      btn.classList.add('copied');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = originalText;
+      }, 1500);
+    }
+
+    function createCardElement(item, isNew = false) {
+      const card = document.createElement('div');
+      card.className = `sms-card ${isNew ? 'new-arrival' : ''}`;
+      
+      const flag = item.flag || '🌐';
+      const country = item.country || 'Unknown';
+      const callingCode = item.calling_code ? `+${item.calling_code}` : '';
+      const service = item.cli || 'Telegram';
+      const otp = item.otp || '';
+
+      card.innerHTML = `
+        <div class="card-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="country-pill">${flag} ${country} ${callingCode}</span>
+            <span class="service-badge">${escapeHtml(service)}</span>
+          </div>
+          <span class="time-badge">⏱️ ${escapeHtml(item.time || '')}</span>
+        </div>
+        <div class="card-body">
+          <div class="number-display">
+            <span class="number-text">${escapeHtml(item.number)}</span>
+            <button class="btn-copy btn-copy-num" onclick="handleCopyClick(this, '${escapeAttr(item.number)}', 'Number')">
+              📋 Copy Number
+            </button>
+          </div>
+          ${otp ? `
+          <div class="otp-display-box">
+            <span style="font-size:0.75rem; color:#94a3b8; font-weight:700; text-transform:uppercase;">CODE:</span>
+            <span class="otp-code">${escapeHtml(otp)}</span>
+            <button class="btn-copy" onclick="handleCopyClick(this, '${escapeAttr(otp)}', 'OTP Code')">
+              📋 Copy Code
+            </button>
+          </div>` : ''}
+        </div>
+        <div class="sms-message-box">
+          <div class="sms-message-text">${escapeHtml(item.message)}</div>
+          <button class="btn-copy" style="align-self:flex-start;" onclick="handleCopyClick(this, '${escapeAttr(item.message)}', 'Full SMS')">
+            📋 Copy SMS
+          </button>
+        </div>
+      `;
+      return card;
+    }
+
+    function createTableRowElement(item) {
+      const tr = document.createElement('tr');
+      const flag = item.flag || '🌐';
+      const country = item.country || 'Unknown';
+      const otp = item.otp || '';
+
+      tr.innerHTML = `
+        <td style="font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8;">${escapeHtml(item.time || '')}</td>
+        <td><span class="country-pill">${flag} ${country}</span></td>
+        <td style="font-family:var(--font-mono); font-weight:700;">${escapeHtml(item.number)}</td>
+        <td>${otp ? `<span class="otp-code" style="font-size:1.1rem;">${escapeHtml(otp)}</span>` : '<span style="color:#64748b;">—</span>'}</td>
+        <td><span class="service-badge">${escapeHtml(item.cli || 'Telegram')}</span></td>
+        <td style="max-width:320px; word-break:break-word;">${escapeHtml(item.message)}</td>
+        <td>
+          <button class="btn-copy" onclick="handleCopyClick(this, '${escapeAttr(item.number)}', 'Number')">Num</button>
+          ${otp ? `<button class="btn-copy" onclick="handleCopyClick(this, '${escapeAttr(otp)}', 'Code')">Code</button>` : ''}
+        </td>
+      `;
+      return tr;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function addNewItem(item, isInitial = false) {
+      const sig = `${item.time}|${item.number}|${item.message}`;
+      if (seenSignatures.has(sig)) return;
+      seenSignatures.add(sig);
+
+      records.unshift(item);
+      if (item.country) uniqueCountries.add(item.country);
+      if (item.otp) totalOtps++;
+
+      statTotal.textContent = records.length;
+      statOtps.textContent = totalOtps;
+      statCountries.textContent = uniqueCountries.size;
+
+      emptyState.style.display = 'none';
+
+      const cardEl = createCardElement(item, !isInitial);
+      feedContainer.insertBefore(cardEl, feedContainer.firstChild);
+
+      const rowEl = createTableRowElement(item);
+      tableBody.insertBefore(rowEl, tableBody.firstChild);
+
+      if (!isInitial) {
+        playChime();
+        if (autoCopyOtp && item.otp) {
+          copyToClipboard(item.otp, 'OTP Code');
+        } else if (autoCopyNumber && item.number) {
+          copyToClipboard(item.number, 'Phone Number');
+        }
+      }
+    }
+
+    async function pollLatestRecords() {
+      if (!autoRefreshActive) return;
+      try {
+        const res = await fetch('/api/records');
+        if (res.ok) {
+          const list = await res.json();
+          list.forEach(item => addNewItem(item, false));
+        }
+      } catch (e) {}
+    }
+
+    function startAutoRefreshTimer() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      if (autoRefreshActive) {
+        refreshTimer = setInterval(pollLatestRecords, refreshIntervalMs);
+      }
+    }
+
+    function connectSSE() {
+      if (evtSource) evtSource.close();
+      evtSource = new EventSource('/api/stream');
+
+      evtSource.onopen = () => {
+        statusPill.className = 'status-badge';
+        statusText.textContent = '● LIVE 0ms STREAM';
+        statSpeed.textContent = '<50ms';
+      };
+
+      evtSource.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (Array.isArray(data)) {
+            data.forEach(item => addNewItem(item, false));
+          } else if (data && data.number) {
+            addNewItem(data, false);
+          }
+        } catch (err) {}
+      };
+
+      evtSource.onerror = () => {
+        statusPill.className = 'status-badge disconnected';
+        statusText.textContent = '● RECONNECTING...';
+        statSpeed.textContent = 'Auto-polling';
+      };
+    }
+
+    async function loadInitialData() {
+      try {
+        const [resRecords, resStatus] = await Promise.all([
+          fetch('/api/records'),
+          fetch('/api/status')
+        ]);
+
+        if (resStatus.ok) {
+          const status = await resStatus.json();
+          activeKeyword = status.keyword || 'Telegram';
+          keywordInput.value = activeKeyword;
+          updateKeywordBadge(activeKeyword);
+          updateChipsState(activeKeyword);
+        }
+
+        if (resRecords.ok) {
+          const list = await resRecords.json();
+          list.forEach(item => addNewItem(item, true));
+        }
+      } catch (err) {}
+    }
+
+    function updateKeywordBadge(kw) {
+      if (kw) {
+        activeKwBadge.textContent = `FILTER: "${kw}"`;
+        activeKwBadge.style.display = 'inline-flex';
+      } else {
+        activeKwBadge.style.display = 'none';
+      }
+    }
+
+    function updateChipsState(kw) {
+      document.querySelectorAll('.chip').forEach(ch => {
+        if (ch.getAttribute('data-kw') === kw) {
+          ch.classList.add('active');
+        } else {
+          ch.classList.remove('active');
+        }
+      });
+    }
+
+    async function setKeyword(kw, permanent = false) {
+      activeKeyword = kw;
+      keywordInput.value = kw;
+      updateKeywordBadge(kw);
+      updateChipsState(kw);
+
+      try {
+        await fetch('/api/keyword', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword: kw, permanent: permanent })
+        });
+        showToast(permanent ? `Saved & Filtered: "${kw || 'ALL'}"` : `Active Keyword: "${kw || 'ALL'}"`, '⚡');
+        pollLatestRecords();
+      } catch (err) {}
+    }
+
+    const selectInterval = document.getElementById('select-interval');
+    const intervalDisplay = document.getElementById('interval-display');
+    selectInterval.addEventListener('change', () => {
+      refreshIntervalMs = parseInt(selectInterval.value);
+      intervalDisplay.textContent = (refreshIntervalMs / 1000).toFixed(1) + 's';
+      startAutoRefreshTimer();
+      showToast(`Auto-Refresh set to ${(refreshIntervalMs / 1000).toFixed(1)}s`);
+    });
+
+    const btnToggleAutoRefresh = document.getElementById('btn-toggle-autorefresh');
+    btnToggleAutoRefresh.addEventListener('click', () => {
+      autoRefreshActive = !autoRefreshActive;
+      btnToggleAutoRefresh.classList.toggle('active', autoRefreshActive);
+      btnToggleAutoRefresh.textContent = autoRefreshActive ? '🔄 Auto-Refresh: ON' : '⏸️ Auto-Refresh: PAUSED';
+      startAutoRefreshTimer();
+      showToast(autoRefreshActive ? 'Auto-Refresh ON' : 'Auto-Refresh Paused');
+    });
+
+    // ⚡ INSTANT FORCE FETCH BUTTON: Calls backend live fetch and updates instantly
+    const btnForce = document.getElementById('btn-force-refresh');
+    btnForce.addEventListener('click', async () => {
+      btnForce.innerHTML = '⚡ Fetching...';
+      btnForce.disabled = true;
+      try {
+        const res = await fetch('/api/force_fetch');
+        const data = await res.json();
+        if (data.records && data.records.length > 0) {
+          data.records.forEach(item => addNewItem(item, false));
+        }
+        showToast(`⚡ Forced live sync complete! (${data.new_count || 0} new codes)`, '⚡');
+      } catch (err) {
+        showToast(`Force fetch error: ${err}`, '❌');
+      } finally {
+        btnForce.innerHTML = '⚡ Force Fetch Now';
+        btnForce.disabled = false;
+      }
+    });
+
+    document.getElementById('btn-apply-keyword').addEventListener('click', () => setKeyword(keywordInput.value.trim(), false));
+    document.getElementById('btn-save-default').addEventListener('click', () => setKeyword(keywordInput.value.trim(), true));
+    document.getElementById('btn-clear-keyword').addEventListener('click', () => setKeyword('', false));
+
+    keywordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') setKeyword(keywordInput.value.trim(), false);
+    });
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => setKeyword(chip.getAttribute('data-kw'), false));
+    });
+
+    const btnSound = document.getElementById('btn-sound');
+    btnSound.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      btnSound.classList.toggle('active', soundEnabled);
+      btnSound.textContent = soundEnabled ? '🔔 Sound: ON' : '🔕 Sound: OFF';
+    });
+
+    const btnAutoCopyNum = document.getElementById('btn-autocopy-num');
+    btnAutoCopyNum.addEventListener('click', () => {
+      autoCopyNumber = !autoCopyNumber;
+      btnAutoCopyNum.classList.toggle('active', autoCopyNumber);
+      if (autoCopyNumber && autoCopyOtp) {
+        autoCopyOtp = false;
+        btnAutoCopyOtp.classList.remove('active');
+      }
+    });
+
+    const btnAutoCopyOtp = document.getElementById('btn-autocopy-otp');
+    btnAutoCopyOtp.addEventListener('click', () => {
+      autoCopyOtp = !autoCopyOtp;
+      btnAutoCopyOtp.classList.toggle('active', autoCopyOtp);
+      if (autoCopyOtp && autoCopyNumber) {
+        autoCopyNumber = false;
+        btnAutoCopyNum.classList.remove('active');
+      }
+    });
+
+    const btnViewCards = document.getElementById('btn-view-cards');
+    const btnViewTable = document.getElementById('btn-view-table');
+    btnViewCards.addEventListener('click', () => {
+      btnViewCards.classList.add('active');
+      btnViewTable.classList.remove('active');
+      feedContainer.style.display = 'flex';
+      tableWrap.style.display = 'none';
+    });
+    btnViewTable.addEventListener('click', () => {
+      btnViewTable.classList.add('active');
+      btnViewCards.classList.remove('active');
+      feedContainer.style.display = 'none';
+      tableWrap.style.display = 'block';
+    });
+
+    document.getElementById('btn-clear-feed').addEventListener('click', async () => {
+      records = [];
+      seenSignatures.clear();
+      uniqueCountries.clear();
+      totalOtps = 0;
+      feedContainer.innerHTML = '';
+      tableBody.innerHTML = '';
+      emptyState.style.display = 'block';
+      statTotal.textContent = '0';
+      statOtps.textContent = '0';
+      statCountries.textContent = '0';
+      await fetch('/api/clear', { method: 'POST' });
+      showToast('Feed cleared');
+    });
+
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      if (!records.length) return showToast('No records to export!', '⚠️');
+      const header = ["Time", "Country", "CallingCode", "Number", "OTP", "Service", "Message"];
+      const rows = records.map(r => [
+        `"${(r.time || '').replace(/"/g, '""')}"`,
+        `"${(r.country || '').replace(/"/g, '""')}"`,
+        `"${(r.calling_code || '').replace(/"/g, '""')}"`,
+        `"${(r.number || '').replace(/"/g, '""')}"`,
+        `"${(r.otp || '').replace(/"/g, '""')}"`,
+        `"${(r.cli || '').replace(/"/g, '""')}"`,
+        `"${(r.message || '').replace(/"/g, '""')}"`
+      ]);
+      const csvContent = "data:text/csv;charset=utf-8," + [header.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `SMS_Export_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV exported!', '📥');
+    });
+
+    loadInitialData();
+    connectSSE();
+    startAutoRefreshTimer();
+  </script>
+</body>
+</html>
