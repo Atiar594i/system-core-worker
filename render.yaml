@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: flex-sms-live-hub
+    name: system-core-worker
     runtime: python
     plan: free
     region: singapore
