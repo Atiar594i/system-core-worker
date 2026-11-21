@@ -1,28 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚡ Flex SMS Live Feed Hub - Ultra-Fast SMS & OTP Stream</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#070a13">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>⚡ Live SMS & OTP Hub - Instant Force Fetch</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #070a12;
+      --bg: #070a13;
       --card-bg: #0f172a;
       --card-border: #1e293b;
-      --card-hover: #1e2942;
+      --card-border-glow: #38bdf8;
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-glow: rgba(56, 189, 248, 0.35);
       --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.25);
-      --danger: #ef4444;
+      --success-glow: rgba(16, 185, 129, 0.35);
       --warning: #f59e0b;
+      --warning-glow: rgba(245, 158, 11, 0.35);
+      --danger: #ef4444;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dark: #64748b;
-      --font-sans: 'Outfit', -apple-system, sans-serif;
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -37,114 +43,165 @@
     body {
       background-color: var(--bg);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(245, 158, 11, 0.07) 0%, transparent 40%);
       background-attachment: fixed;
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 14px;
+      padding: 10px 10px 100px 10px; /* bottom padding for sticky mobile bar */
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 900px;
       margin: 0 auto;
       width: 100%;
     }
 
-    /* Header */
+    /* Header Bar */
     header {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 16px 22px;
-      margin-bottom: 14px;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, #0284c7, #38bdf8);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 0 20px var(--accent-glow);
-    }
-
-    .brand-text h1 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #fff;
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .brand-text p {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .header-actions {
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border-radius: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-title p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .header-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    .status-badge {
+    .badge-status {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      font-size: 0.78rem;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
       font-weight: 700;
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
+    .dot-pulse {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background-color: #10b981;
-      animation: pulse 1.5s infinite;
+      animation: pulseAnim 1.4s infinite;
     }
 
-    .status-badge.disconnected {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border-color: rgba(239, 68, 68, 0.3);
-    }
-
-    .status-badge.disconnected .status-dot {
-      background-color: #ef4444;
-      animation: none;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(0.9); opacity: 0.7; }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.9); opacity: 0.6; }
       50% { transform: scale(1.3); opacity: 1; }
-      100% { transform: scale(0.9); opacity: 0.7; }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    .badge-keyword {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      cursor: pointer;
+    }
+
+    /* Action Controls Card */
+    .controls-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .controls-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .keyword-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .keyword-input-wrap input {
+      flex: 1;
+      background: #090e1a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .keyword-input-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
     }
 
     /* Buttons */
@@ -152,745 +209,575 @@
       background: #1e293b;
       border: 1px solid #334155;
       color: var(--text-main);
-      padding: 8px 14px;
+      padding: 9px 14px;
       border-radius: 10px;
       font-size: 0.82rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: all 0.2s ease;
       user-select: none;
-    }
-
-    .btn:hover {
-      background: #334155;
-      border-color: #475569;
-      transform: translateY(-1px);
+      min-height: 40px;
     }
 
     .btn:active {
-      transform: translateY(0);
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .btn-toggle {
+      background: #0f172a;
+      border-color: #334155;
+      color: var(--text-muted);
     }
 
     .btn-toggle.active {
       background: rgba(16, 185, 129, 0.2);
       border-color: #10b981;
       color: #34d399;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      border-color: #38bdf8;
-      color: #fff;
-      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
-      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.5);
-    }
-
-    .btn-force {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      border-color: #fbbf24;
-      color: #fff;
-      font-weight: 700;
-      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
-    }
-
-    .btn-force:hover {
-      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.5);
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #f87171;
-    }
-
-    /* Auto-Refresh Bar */
-    .autorefresh-bar {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 10px 18px;
-      margin-bottom: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .autorefresh-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .pulse-ring {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-      animation: pulse-ring-anim 1s infinite;
-    }
-
-    @keyframes pulse-ring-anim {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-
-    .autorefresh-label {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #34d399;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .autorefresh-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .select-interval {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      outline: none;
-      cursor: pointer;
-    }
-
-    /* Search & Keyword Section */
-    .search-card {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px 20px;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
-
-    .search-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .search-input-wrap {
-      flex: 1;
-      min-width: 260px;
-      position: relative;
-    }
-
-    .search-input-wrap input {
+    /* Big Hero Force Fetch Button */
+    .btn-hero-force {
       width: 100%;
-      background: #0b1120;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 16px 12px 42px;
-      color: #fff;
-      font-size: 0.95rem;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .search-input-wrap input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: var(--text-muted);
-    }
-
-    /* Chips */
-    .chips-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-      align-items: center;
-    }
-
-    .chips-label {
-      font-size: 0.78rem;
-      color: var(--text-dark);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .chip {
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      user-select: none;
-    }
-
-    .chip:hover {
-      background: #334155;
-      color: #fff;
-    }
-
-    .chip.active {
-      background: rgba(56, 189, 248, 0.2);
-      border-color: var(--accent);
-      color: #38bdf8;
-    }
-
-    /* Stats Strip */
-    .stats-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .stat-box {
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid var(--card-border);
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      border: 1px solid #fbbf24;
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 14px 20px;
       border-radius: 14px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .stat-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
+      box-shadow: 0 6px 20px var(--warning-glow);
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      gap: 10px;
+      letter-spacing: 0.02em;
+      transition: all 0.2s ease;
+      min-height: 52px;
     }
 
-    .stat-icon.blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-    .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-    .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
-    .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-
-    .stat-info h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.2;
+    .btn-hero-force:active {
+      transform: scale(0.98);
+      filter: brightness(1.1);
     }
 
-    .stat-info p {
-      font-size: 0.76rem;
+    .btn-hero-force.fetching {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toggle Strip */
+    .toggle-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .toggle-chip {
+      background: #090e1a;
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
       color: var(--text-muted);
-      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
     }
 
-    /* Feed Controls */
-    .feed-controls {
+    .toggle-chip.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent);
+      color: #38bdf8;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Feed Status Info */
+    .feed-header-info {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin: 10px 4px;
       flex-wrap: wrap;
       gap: 8px;
     }
 
-    .feed-title {
-      font-size: 1.1rem;
+    .feed-count-badge {
+      font-size: 0.85rem;
       font-weight: 700;
+      color: #cbd5e1;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .service-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(56, 189, 248, 0.15);
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .view-toggles {
-      display: flex;
       gap: 6px;
     }
 
-    /* Feed Grid */
+    .feed-latency-badge {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    /* Cards Feed */
     #feed-container {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    /* Table View */
-    .table-container {
-      overflow-x: auto;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.88rem;
-    }
-
-    th {
-      background: #0f172a;
-      padding: 14px 16px;
-      color: var(--text-muted);
-      font-weight: 600;
-      border-bottom: 1px solid var(--card-border);
-      white-space: nowrap;
-    }
-
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(30, 41, 59, 0.6);
-      vertical-align: middle;
-    }
-
-    tr:hover td {
-      background: rgba(30, 41, 59, 0.4);
-    }
-
-    /* Card Item */
+    /* Mobile-Optimized SMS Card */
     .sms-card {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.95);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 18px 20px;
-      transition: all 0.25s ease;
+      padding: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s, border-color 0.2s;
       position: relative;
-      overflow: hidden;
+      animation: fadeInCard 0.25s ease-out;
     }
 
-    .sms-card:hover {
-      border-color: #334155;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    @keyframes fadeInCard {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .sms-card.new-arrival {
-      animation: arrivalPulse 2s ease forwards;
+    .sms-card.new-pulse {
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
     }
 
-    @keyframes arrivalPulse {
-      0% {
-        border-color: #10b981;
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
-        transform: scale(1.01);
-      }
-      100% {
-        border-color: var(--card-border);
-        box-shadow: none;
-        transform: scale(1);
-      }
-    }
-
-    .card-top {
+    .card-meta-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
-    .country-pill {
+    .country-tag {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: #1e293b;
       padding: 4px 10px;
       border-radius: 8px;
       font-size: 0.82rem;
-      font-weight: 600;
-      color: #e2e8f0;
+      font-weight: 700;
+      color: #f1f5f9;
       border: 1px solid #334155;
     }
 
-    .time-badge {
-      font-size: 0.78rem;
+    .time-tag {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
       color: var(--text-dark);
-      font-family: var(--font-mono);
+      background: #090e1a;
+      padding: 3px 8px;
+      border-radius: 6px;
     }
 
-    .card-body {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    @media (max-width: 768px) {
-      .card-body {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .number-display {
+    /* Phone Number Row */
+    .number-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .number-text {
-      font-size: 1.35rem;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      color: #fff;
-      letter-spacing: 0.02em;
-    }
-
-    .otp-display-box {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-      border: 2px dashed #0284c7;
+      justify-content: space-between;
+      background: #090e1a;
+      border: 1px solid #1e293b;
       border-radius: 12px;
-      padding: 10px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      gap: 10px;
     }
 
-    .otp-code {
-      font-size: 1.45rem;
+    .number-val {
+      font-size: 1.25rem;
       font-weight: 800;
+      font-family: var(--font-mono);
+      color: #ffffff;
+      letter-spacing: 0.03em;
+      word-break: break-all;
+    }
+
+    .btn-touch-copy {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #38bdf8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-height: 42px;
+      transition: all 0.15s;
+    }
+
+    .btn-touch-copy:active {
+      transform: scale(0.95);
+    }
+
+    .btn-touch-copy.copied {
+      background: #10b981 !important;
+      border-color: #10b981 !important;
+      color: #fff !important;
+    }
+
+    /* Hero OTP Box */
+    .otp-hero-box {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 2px dashed #0284c7;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 12px rgba(2, 132, 199, 0.15);
+    }
+
+    .otp-label-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .otp-badge-text {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .otp-digits {
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
       color: #38bdf8;
       letter-spacing: 0.15em;
-      font-family: var(--font-mono);
+      text-shadow: 0 0 14px var(--accent-glow);
     }
 
-    .sms-message-box {
+    .btn-otp-copy {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border: 1px solid #38bdf8;
+      color: #ffffff;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 9px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 12px rgba(2, 132, 199, 0.35);
+      min-height: 44px;
+      transition: all 0.15s;
+    }
+
+    .btn-otp-copy:active {
+      transform: scale(0.95);
+    }
+
+    .btn-otp-copy.copied {
+      background: #10b981 !important;
+      border-color: #10b981 !important;
+      color: #fff !important;
+    }
+
+    /* Message Box */
+    .msg-preview-box {
       background: #090e1a;
       border: 1px solid #1e293b;
       border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 0.88rem;
-      color: #cbd5e1;
-      line-height: 1.5;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      line-height: 1.45;
       display: flex;
-      justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 10px;
     }
 
-    .sms-message-text {
+    .msg-text {
       flex: 1;
       word-break: break-word;
     }
 
-    .btn-copy {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.2s;
-      white-space: nowrap;
+    /* Empty State */
+    .empty-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px dashed #334155;
+      border-radius: 16px;
+      padding: 40px 20px;
+      text-align: center;
     }
 
-    .btn-copy:hover {
-      background: #334155;
-      color: #fff;
-      border-color: #475569;
+    .empty-card .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
     }
 
-    .btn-copy.copied {
-      background: #10b981 !important;
-      color: #fff !important;
-      border-color: #10b981 !important;
+    .empty-card h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-bottom: 6px;
     }
 
-    #toast {
+    .empty-card p {
+      font-size: 0.82rem;
+      color: var(--text-dark);
+      max-width: 380px;
+      margin: 0 auto 16px auto;
+    }
+
+    /* Sticky Bottom Thumb Bar for Mobile */
+    .mobile-sticky-bar {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #0f172a;
-      border: 1px solid #38bdf8;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(7, 10, 19, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--card-border);
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) 14px;
+      z-index: 1000;
       display: flex;
       align-items: center;
       gap: 10px;
-      transform: translateY(120px);
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 9999;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .mobile-sticky-bar .btn-hero-force {
+      flex: 1;
+      margin: 0;
+    }
+
+    .sticky-mini-btn {
+      width: 50px;
+      height: 52px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .sticky-mini-btn.active {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px var(--accent-glow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 2000;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      white-space: nowrap;
     }
 
     #toast.show {
-      transform: translateY(0);
-      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 2px dashed var(--card-border);
-      border-radius: 18px;
-      color: var(--text-muted);
-    }
-
-    .empty-state .icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-      display: inline-block;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+    @media (min-width: 769px) {
+      .mobile-sticky-bar {
+        display: none; /* Hide floating bar on big screens since top hero button is large */
+      }
+      body {
+        padding-bottom: 20px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- Toast -->
+  <div id="toast">
+    <span id="toast-icon">⚡</span>
+    <span id="toast-msg">Updated</span>
+  </div>
+
   <div class="container">
+    <!-- Header -->
     <header>
-      <div class="brand">
+      <div class="brand-group">
         <div class="brand-icon">⚡</div>
-        <div class="brand-text">
-          <h1>Flex SMS Live Feed Hub</h1>
-          <p>Real-Time Portal Stream &bull; Permanent Telegram Filter</p>
+        <div class="brand-title">
+          <h1>Flex SMS Feed</h1>
+          <p>Instant On-Demand Verification</p>
         </div>
       </div>
-      <div class="header-actions">
-        <div id="status-pill" class="status-badge">
-          <span class="status-dot"></span>
-          <span id="status-text">CONNECTING...</span>
-        </div>
-        <button id="btn-sound" class="btn btn-toggle active" title="Toggle audio chime on new SMS">
-          🔔 Sound: ON
-        </button>
-        <button id="btn-autocopy-num" class="btn btn-toggle" title="Auto-copy incoming phone numbers">
-          📋 Auto-Copy Number
-        </button>
-        <button id="btn-autocopy-otp" class="btn btn-toggle active" title="Auto-copy incoming OTP codes">
-          🔑 Auto-Copy Code
-        </button>
+      <div class="header-pills">
+        <span class="badge-status">
+          <span class="dot-pulse"></span>
+          <span id="status-label">Online</span>
+        </span>
+        <span id="badge-kw" class="badge-keyword">
+          🔍 <span id="badge-kw-text">Telegram</span>
+        </span>
       </div>
     </header>
 
-    <!-- Auto-Refresh & Force Fetch Bar -->
-    <div class="autorefresh-bar">
-      <div class="autorefresh-info">
-        <div class="pulse-ring"></div>
-        <span class="autorefresh-label">Auto-Refresh: ACTIVE</span>
-        <span style="font-size:0.8rem; color:var(--text-muted);">Syncing every <span id="interval-display" style="color:#38bdf8; font-weight:700;">1.0s</span></span>
+    <!-- Controls & Big Force Button -->
+    <div class="controls-card">
+      <div class="controls-top">
+        <div class="keyword-input-wrap">
+          <input type="text" id="kw-input" value="Telegram" placeholder="Search keyword (e.g. Telegram)...">
+          <button id="btn-save-kw" class="btn btn-primary">Set</button>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button id="btn-autocopy-toggle" class="btn btn-toggle active">
+            📋 Auto-Copy OTP: ON
+          </button>
+          <button id="btn-sound-toggle" class="btn btn-toggle active">
+            🔔 Sound: ON
+          </button>
+        </div>
       </div>
-      <div class="autorefresh-actions">
-        <select id="select-interval" class="select-interval" title="Change Auto-Refresh Speed">
-          <option value="500">⚡ 0.5s (Turbo)</option>
-          <option value="1000" selected>⏱️ 1.0s (Recommended)</option>
-          <option value="2000">⏱️ 2.0s (Normal)</option>
-        </select>
-        <button id="btn-toggle-autorefresh" class="btn btn-toggle active">
-          🔄 Auto-Refresh: ON
-        </button>
-        <button id="btn-force-refresh" class="btn btn-force" title="Immediately fetch from portal right now without waiting">
-          ⚡ Force Fetch Now
-        </button>
+
+      <!-- Hero Force Fetch Button -->
+      <button id="btn-hero-force" class="btn-hero-force">
+        <span class="icon">⚡</span>
+        <span id="btn-hero-text">FORCE FETCH NOW (১ সেকেন্ডে রিফ্রেশ)</span>
+      </button>
+
+      <!-- Quick Chips -->
+      <div class="toggle-strip">
+        <span style="font-size:0.75rem; color:#64748b; font-weight:700;">QUICK KEYWORD:</span>
+        <span class="toggle-chip active" data-kw="Telegram">Telegram</span>
+        <span class="toggle-chip" data-kw="WhatsApp">WhatsApp</span>
+        <span class="toggle-chip" data-kw="Google">Google</span>
+        <span class="toggle-chip" data-kw="TikTok">TikTok</span>
+        <span class="toggle-chip" data-kw="">All</span>
       </div>
     </div>
 
-    <!-- Search & Keyword Filter Bar -->
-    <div class="search-card">
-      <div class="search-row">
-        <div class="search-input-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="keyword-input" value="Telegram" placeholder="Search keyword (e.g. Telegram, WhatsApp, Google)...">
-        </div>
-        <button id="btn-apply-keyword" class="btn btn-primary">
-          ⚡ Apply Search
-        </button>
-        <button id="btn-save-default" class="btn" title="Save this keyword permanently in config">
-          💾 Save as Permanent
-        </button>
-        <button id="btn-clear-keyword" class="btn">
-          ❌ Show All
-        </button>
+    <!-- Feed Header Info -->
+    <div class="feed-header-info">
+      <div class="feed-count-badge">
+        <span>📑 Reports:</span>
+        <strong id="reports-count" style="color:#38bdf8;">0</strong>
       </div>
-      <div class="chips-row">
-        <span class="chips-label">Quick Filters:</span>
-        <span class="chip active" data-kw="Telegram">Telegram (Permanent)</span>
-        <span class="chip" data-kw="">All SMS</span>
-        <span class="chip" data-kw="WhatsApp">WhatsApp</span>
-        <span class="chip" data-kw="Google">Google</span>
-        <span class="chip" data-kw="Microsoft">Microsoft</span>
-        <span class="chip" data-kw="Facebook">Facebook</span>
-        <span class="chip" data-kw="TikTok">TikTok</span>
-        <span class="chip" data-kw="IMO">IMO</span>
-        <span class="chip" data-kw="Binance">Binance</span>
+      <div id="latency-badge" class="feed-latency-badge" style="display:none;">
+        ⚡ Ready
       </div>
     </div>
 
-    <!-- Stats Strip -->
-    <div class="stats-strip">
-      <div class="stat-box">
-        <div class="stat-icon blue">📨</div>
-        <div class="stat-info">
-          <h3 id="stat-total">0</h3>
-          <p>Total Captured</p>
-        </div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-icon green">🔑</div>
-        <div class="stat-info">
-          <h3 id="stat-otps">0</h3>
-          <p>OTP Codes Ready</p>
-        </div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-icon purple">🌍</div>
-        <div class="stat-info">
-          <h3 id="stat-countries">0</h3>
-          <p>Unique Countries</p>
-        </div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-icon orange">⚡</div>
-        <div class="stat-info">
-          <h3 id="stat-speed">&lt;50ms</h3>
-          <p>SSE Real-time</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Feed Controls -->
-    <div class="feed-controls">
-      <div class="feed-title">
-        <span>Incoming Telegram Stream</span>
-        <span id="active-kw-badge" class="service-badge">FILTER: "Telegram"</span>
-      </div>
-      <div class="view-toggles">
-        <button id="btn-view-cards" class="btn btn-toggle active">🗂️ Cards</button>
-        <button id="btn-view-table" class="btn btn-toggle">📋 Table</button>
-        <button id="btn-export-csv" class="btn">📥 Export CSV</button>
-        <button id="btn-clear-feed" class="btn btn-danger">🗑️ Clear Feed</button>
-      </div>
-    </div>
-
-    <!-- Cards Feed View -->
+    <!-- Live Cards Container -->
     <div id="feed-container"></div>
 
-    <!-- Table Feed View -->
-    <div id="table-wrap" class="table-container" style="display: none;">
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Country</th>
-            <th>Phone Number</th>
-            <th>OTP Code</th>
-            <th>Service</th>
-            <th>Message</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-      </table>
-    </div>
-
     <!-- Empty State -->
-    <div id="empty-state" class="empty-state">
+    <div id="empty-state" class="empty-card">
       <div class="icon">📡</div>
-      <h3>Listening for Telegram SMS...</h3>
-      <p>Dual engines are actively syncing. Click 'Force Fetch Now' anytime for instant sync.</p>
+      <h3>কোনো রিপোর্ট নেই বা লোড হচ্ছে...</h3>
+      <p>নিচের <strong>"FORCE FETCH NOW"</strong> বাটনে ক্লিক করলেই এক সেকেন্ডের ভেতর প্যানেল থেকে লাইভ রিপোর্ট এখানে চলে আসবে।</p>
+      <button class="btn btn-primary" onclick="triggerForceFetch()">⚡ এখনি রিফ্রেশ করুন</button>
     </div>
   </div>
 
-  <div id="toast">
-    <span id="toast-icon">📋</span>
-    <span id="toast-msg">Copied to clipboard!</span>
+  <!-- Mobile Sticky Thumb Bar -->
+  <div class="mobile-sticky-bar">
+    <button id="btn-sticky-force" class="btn-hero-force">
+      <span class="icon">⚡</span>
+      <span id="btn-sticky-text">FORCE FETCH</span>
+    </button>
+    <button id="btn-sticky-autocopy" class="sticky-mini-btn active" title="Toggle Auto-Copy">
+      📋
+    </button>
+    <button id="btn-sticky-sound" class="sticky-mini-btn active" title="Toggle Sound">
+      🔔
+    </button>
   </div>
 
   <script>
-    let records = [];
-    let autoRefreshActive = true;
-    let refreshIntervalMs = 1000;
-    let refreshTimer = null;
-    let soundEnabled = true;
-    let autoCopyNumber = false;
+    let currentKeyword = 'Telegram';
     let autoCopyOtp = true;
-    let currentView = 'cards';
-    let activeKeyword = 'Telegram';
-    let seenSignatures = new Set();
-    let uniqueCountries = new Set();
-    let totalOtps = 0;
-    let evtSource = null;
+    let soundEnabled = true;
+    let isFetching = false;
+    let audioCtx = null;
+    let lastFetchedOtps = new Set();
 
     const feedContainer = document.getElementById('feed-container');
-    const tableWrap = document.getElementById('table-wrap');
-    const tableBody = document.getElementById('table-body');
     const emptyState = document.getElementById('empty-state');
-    const statusPill = document.getElementById('status-pill');
-    const statusText = document.getElementById('status-text');
-    const keywordInput = document.getElementById('keyword-input');
-    const activeKwBadge = document.getElementById('active-kw-badge');
-    const toast = document.getElementById('toast');
-    const toastMsg = document.getElementById('toast-msg');
+    const reportsCountEl = document.getElementById('reports-count');
+    const latencyBadgeEl = document.getElementById('latency-badge');
+    const kwInput = document.getElementById('kw-input');
+    const badgeKwText = document.getElementById('badge-kw-text');
+    const toastEl = document.getElementById('toast');
+    const toastMsgEl = document.getElementById('toast-msg');
 
-    const statTotal = document.getElementById('stat-total');
-    const statOtps = document.getElementById('stat-otps');
-    const statCountries = document.getElementById('stat-countries');
-    const statSpeed = document.getElementById('stat-speed');
+    const btnHeroForce = document.getElementById('btn-hero-force');
+    const btnHeroText = document.getElementById('btn-hero-text');
+    const btnStickyForce = document.getElementById('btn-sticky-force');
+    const btnStickyText = document.getElementById('btn-sticky-text');
 
-    let audioCtx = null;
+    const btnAutoCopyToggle = document.getElementById('btn-autocopy-toggle');
+    const btnStickyAutoCopy = document.getElementById('btn-sticky-autocopy');
+    const btnSoundToggle = document.getElementById('btn-sound-toggle');
+    const btnStickySound = document.getElementById('btn-sticky-sound');
+
+    // Chime sound
     function playChime() {
       if (!soundEnabled) return;
       try {
@@ -900,8 +787,8 @@
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.22);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -910,16 +797,25 @@
       } catch (e) {}
     }
 
-    let toastTimeout = null;
-    function showToast(text, icon = '📋') {
-      document.getElementById('toast-icon').textContent = icon;
-      toastMsg.textContent = text;
-      toast.classList.add('show');
-      if (toastTimeout) clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
+    // Haptic vibration feedback for phones
+    function triggerVibrate(pattern = [40]) {
+      if (navigator.vibrate) {
+        try { navigator.vibrate(pattern); } catch (e) {}
+      }
     }
 
-    async function copyToClipboard(text, label = 'Text') {
+    let toastTimer = null;
+    function showToast(text, icon = '⚡') {
+      document.getElementById('toast-icon').textContent = icon;
+      toastMsgEl.textContent = text;
+      toastEl.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2000);
+    }
+
+    // 1-Click Clipboard Copy
+    async function copyText(text, label = 'Text', btn = null) {
+      triggerVibrate([30]);
       try {
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(text);
@@ -933,93 +829,31 @@
           document.execCommand('copy');
           document.body.removeChild(ta);
         }
-        showToast(`Copied ${label}: ${text}`);
+        showToast(`${label} Copied: ${text}`, '📋');
+        if (btn) {
+          btn.classList.add('copied');
+          const orig = btn.innerHTML;
+          btn.innerHTML = '✓ Copied!';
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = orig;
+          }, 1400);
+        }
         return true;
       } catch (err) {
-        showToast(`Failed to copy: ${err}`, '❌');
+        showToast(`Copy failed: ${err}`, '❌');
         return false;
       }
     }
 
-    function handleCopyClick(btn, text, label) {
-      copyToClipboard(text, label);
-      btn.classList.add('copied');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '✓ Copied!';
-      setTimeout(() => {
-        btn.classList.remove('copied');
-        btn.innerHTML = originalText;
-      }, 1500);
-    }
-
-    function createCardElement(item, isNew = false) {
-      const card = document.createElement('div');
-      card.className = `sms-card ${isNew ? 'new-arrival' : ''}`;
-      
-      const flag = item.flag || '🌐';
-      const country = item.country || 'Unknown';
-      const callingCode = item.calling_code ? `+${item.calling_code}` : '';
-      const service = item.cli || 'Telegram';
-      const otp = item.otp || '';
-
-      card.innerHTML = `
-        <div class="card-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="country-pill">${flag} ${country} ${callingCode}</span>
-            <span class="service-badge">${escapeHtml(service)}</span>
-          </div>
-          <span class="time-badge">⏱️ ${escapeHtml(item.time || '')}</span>
-        </div>
-        <div class="card-body">
-          <div class="number-display">
-            <span class="number-text">${escapeHtml(item.number)}</span>
-            <button class="btn-copy btn-copy-num" onclick="handleCopyClick(this, '${escapeAttr(item.number)}', 'Number')">
-              📋 Copy Number
-            </button>
-          </div>
-          ${otp ? `
-          <div class="otp-display-box">
-            <span style="font-size:0.75rem; color:#94a3b8; font-weight:700; text-transform:uppercase;">CODE:</span>
-            <span class="otp-code">${escapeHtml(otp)}</span>
-            <button class="btn-copy" onclick="handleCopyClick(this, '${escapeAttr(otp)}', 'OTP Code')">
-              📋 Copy Code
-            </button>
-          </div>` : ''}
-        </div>
-        <div class="sms-message-box">
-          <div class="sms-message-text">${escapeHtml(item.message)}</div>
-          <button class="btn-copy" style="align-self:flex-start;" onclick="handleCopyClick(this, '${escapeAttr(item.message)}', 'Full SMS')">
-            📋 Copy SMS
-          </button>
-        </div>
-      `;
-      return card;
-    }
-
-    function createTableRowElement(item) {
-      const tr = document.createElement('tr');
-      const flag = item.flag || '🌐';
-      const country = item.country || 'Unknown';
-      const otp = item.otp || '';
-
-      tr.innerHTML = `
-        <td style="font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8;">${escapeHtml(item.time || '')}</td>
-        <td><span class="country-pill">${flag} ${country}</span></td>
-        <td style="font-family:var(--font-mono); font-weight:700;">${escapeHtml(item.number)}</td>
-        <td>${otp ? `<span class="otp-code" style="font-size:1.1rem;">${escapeHtml(otp)}</span>` : '<span style="color:#64748b;">—</span>'}</td>
-        <td><span class="service-badge">${escapeHtml(item.cli || 'Telegram')}</span></td>
-        <td style="max-width:320px; word-break:break-word;">${escapeHtml(item.message)}</td>
-        <td>
-          <button class="btn-copy" onclick="handleCopyClick(this, '${escapeAttr(item.number)}', 'Number')">Num</button>
-          ${otp ? `<button class="btn-copy" onclick="handleCopyClick(this, '${escapeAttr(otp)}', 'Code')">Code</button>` : ''}
-        </td>
-      `;
-      return tr;
-    }
-
     function escapeHtml(str) {
       if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     function escapeAttr(str) {
@@ -1027,274 +861,181 @@
       return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
 
-    function addNewItem(item, isInitial = false) {
-      const sig = `${item.time}|${item.number}|${item.message}`;
-      if (seenSignatures.has(sig)) return;
-      seenSignatures.add(sig);
-
-      records.unshift(item);
-      if (item.country) uniqueCountries.add(item.country);
-      if (item.otp) totalOtps++;
-
-      statTotal.textContent = records.length;
-      statOtps.textContent = totalOtps;
-      statCountries.textContent = uniqueCountries.size;
+    // Render Cards in Mobile-Friendly View
+    function renderRecords(recordsList) {
+      if (!recordsList || recordsList.length === 0) {
+        feedContainer.innerHTML = '';
+        emptyState.style.display = 'block';
+        reportsCountEl.textContent = '0';
+        return;
+      }
 
       emptyState.style.display = 'none';
+      reportsCountEl.textContent = recordsList.length;
 
-      const cardEl = createCardElement(item, !isInitial);
-      feedContainer.insertBefore(cardEl, feedContainer.firstChild);
+      let html = '';
+      recordsList.forEach((item, index) => {
+        const flag = item.flag || '🌐';
+        const country = item.country || 'Unknown';
+        const callingCode = item.calling_code ? `+${item.calling_code}` : '';
+        const service = item.cli || 'Telegram';
+        const otp = item.otp || '';
+        const number = item.number || '';
+        const time = item.time || '';
+        const msg = item.message || '';
 
-      const rowEl = createTableRowElement(item);
-      tableBody.insertBefore(rowEl, tableBody.firstChild);
+        html += `
+          <div class="sms-card ${index === 0 ? 'new-pulse' : ''}">
+            <div class="card-meta-row">
+              <span class="country-tag">${flag} ${escapeHtml(country)} ${callingCode}</span>
+              <span class="time-tag">⏱️ ${escapeHtml(time)}</span>
+            </div>
 
-      if (!isInitial) {
-        playChime();
-        if (autoCopyOtp && item.otp) {
-          copyToClipboard(item.otp, 'OTP Code');
-        } else if (autoCopyNumber && item.number) {
-          copyToClipboard(item.number, 'Phone Number');
-        }
-      }
-    }
+            <!-- Phone Number Row -->
+            <div class="number-row">
+              <span class="number-val">${escapeHtml(number)}</span>
+              <button class="btn-touch-copy" onclick="copyText('${escapeAttr(number)}', 'Number', this)">
+                📋 Copy Num
+              </button>
+            </div>
 
-    async function pollLatestRecords() {
-      if (!autoRefreshActive) return;
-      try {
-        const res = await fetch('/api/records');
-        if (res.ok) {
-          const list = await res.json();
-          list.forEach(item => addNewItem(item, false));
-        }
-      } catch (e) {}
-    }
+            <!-- OTP Hero Box (if OTP present) -->
+            ${otp ? `
+            <div class="otp-hero-box">
+              <div class="otp-label-group">
+                <span class="otp-badge-text">OTP CODE</span>
+                <span class="otp-digits">${escapeHtml(otp)}</span>
+              </div>
+              <button class="btn-otp-copy" onclick="copyText('${escapeAttr(otp)}', 'OTP Code', this)">
+                📋 COPY CODE
+              </button>
+            </div>` : ''}
 
-    function startAutoRefreshTimer() {
-      if (refreshTimer) clearInterval(refreshTimer);
-      if (autoRefreshActive) {
-        refreshTimer = setInterval(pollLatestRecords, refreshIntervalMs);
-      }
-    }
-
-    function connectSSE() {
-      if (evtSource) evtSource.close();
-      evtSource = new EventSource('/api/stream');
-
-      evtSource.onopen = () => {
-        statusPill.className = 'status-badge';
-        statusText.textContent = '● LIVE 0ms STREAM';
-        statSpeed.textContent = '<50ms';
-      };
-
-      evtSource.onmessage = (e) => {
-        try {
-          const data = JSON.parse(e.data);
-          if (Array.isArray(data)) {
-            data.forEach(item => addNewItem(item, false));
-          } else if (data && data.number) {
-            addNewItem(data, false);
-          }
-        } catch (err) {}
-      };
-
-      evtSource.onerror = () => {
-        statusPill.className = 'status-badge disconnected';
-        statusText.textContent = '● RECONNECTING...';
-        statSpeed.textContent = 'Auto-polling';
-      };
-    }
-
-    async function loadInitialData() {
-      try {
-        const [resRecords, resStatus] = await Promise.all([
-          fetch('/api/records'),
-          fetch('/api/status')
-        ]);
-
-        if (resStatus.ok) {
-          const status = await resStatus.json();
-          activeKeyword = status.keyword || 'Telegram';
-          keywordInput.value = activeKeyword;
-          updateKeywordBadge(activeKeyword);
-          updateChipsState(activeKeyword);
-        }
-
-        if (resRecords.ok) {
-          const list = await resRecords.json();
-          list.forEach(item => addNewItem(item, true));
-        }
-      } catch (err) {}
-    }
-
-    function updateKeywordBadge(kw) {
-      if (kw) {
-        activeKwBadge.textContent = `FILTER: "${kw}"`;
-        activeKwBadge.style.display = 'inline-flex';
-      } else {
-        activeKwBadge.style.display = 'none';
-      }
-    }
-
-    function updateChipsState(kw) {
-      document.querySelectorAll('.chip').forEach(ch => {
-        if (ch.getAttribute('data-kw') === kw) {
-          ch.classList.add('active');
-        } else {
-          ch.classList.remove('active');
-        }
+            <!-- SMS Message Row -->
+            <div class="msg-preview-box">
+              <div class="msg-text">${escapeHtml(msg)}</div>
+              <button class="btn-touch-copy" style="min-height:36px; padding:4px 8px; font-size:0.75rem;" onclick="copyText('${escapeAttr(msg)}', 'SMS', this)">
+                Copy SMS
+              </button>
+            </div>
+          </div>
+        `;
       });
+
+      feedContainer.innerHTML = html;
     }
 
-    async function setKeyword(kw, permanent = false) {
-      activeKeyword = kw;
-      keywordInput.value = kw;
-      updateKeywordBadge(kw);
-      updateChipsState(kw);
+    // ⚡ INSTANT FORCE FETCH
+    async function triggerForceFetch() {
+      if (isFetching) return;
+      isFetching = true;
+      triggerVibrate([40]);
+
+      // UI fetching state
+      btnHeroForce.classList.add('fetching');
+      btnHeroText.innerHTML = '<span class="spinner"></span> <span>১ সেকেন্ডে সার্চ হচ্ছে...</span>';
+      btnStickyForce.classList.add('fetching');
+      btnStickyText.innerHTML = '<span class="spinner"></span>';
 
       try {
-        await fetch('/api/keyword', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ keyword: kw, permanent: permanent })
-        });
-        showToast(permanent ? `Saved & Filtered: "${kw || 'ALL'}"` : `Active Keyword: "${kw || 'ALL'}"`, '⚡');
-        pollLatestRecords();
-      } catch (err) {}
-    }
-
-    const selectInterval = document.getElementById('select-interval');
-    const intervalDisplay = document.getElementById('interval-display');
-    selectInterval.addEventListener('change', () => {
-      refreshIntervalMs = parseInt(selectInterval.value);
-      intervalDisplay.textContent = (refreshIntervalMs / 1000).toFixed(1) + 's';
-      startAutoRefreshTimer();
-      showToast(`Auto-Refresh set to ${(refreshIntervalMs / 1000).toFixed(1)}s`);
-    });
-
-    const btnToggleAutoRefresh = document.getElementById('btn-toggle-autorefresh');
-    btnToggleAutoRefresh.addEventListener('click', () => {
-      autoRefreshActive = !autoRefreshActive;
-      btnToggleAutoRefresh.classList.toggle('active', autoRefreshActive);
-      btnToggleAutoRefresh.textContent = autoRefreshActive ? '🔄 Auto-Refresh: ON' : '⏸️ Auto-Refresh: PAUSED';
-      startAutoRefreshTimer();
-      showToast(autoRefreshActive ? 'Auto-Refresh ON' : 'Auto-Refresh Paused');
-    });
-
-    // ⚡ INSTANT FORCE FETCH BUTTON: Calls backend live fetch and updates instantly
-    const btnForce = document.getElementById('btn-force-refresh');
-    btnForce.addEventListener('click', async () => {
-      btnForce.innerHTML = '⚡ Fetching...';
-      btnForce.disabled = true;
-      try {
-        const res = await fetch('/api/force_fetch');
+        const kw = currentKeyword.trim();
+        const url = `/api/force_fetch?keyword=${encodeURIComponent(kw)}&limit=25`;
+        const res = await fetch(url);
         const data = await res.json();
-        if (data.records && data.records.length > 0) {
-          data.records.forEach(item => addNewItem(item, false));
+
+        if (data.success && data.records) {
+          renderRecords(data.records);
+
+          // Latency badge
+          if (data.latency_ms !== undefined) {
+            latencyBadgeEl.style.display = 'inline-block';
+            latencyBadgeEl.textContent = `⚡ ${data.latency_ms}ms (${data.count} found)`;
+          }
+
+          // Check if newest record has OTP
+          if (data.records.length > 0) {
+            const newest = data.records[0];
+            if (newest.otp && !lastFetchedOtps.has(newest.otp)) {
+              lastFetchedOtps.add(newest.otp);
+              playChime();
+              triggerVibrate([60, 40, 60]);
+
+              if (autoCopyOtp) {
+                copyText(newest.otp, 'New OTP Code');
+              }
+            }
+          }
+
+          showToast(`⚡ ${data.count || 0}টি রিপোর্ট আপডেট হয়েছে! (${data.latency_ms || 250}ms)`, '⚡');
+        } else {
+          showToast('রিপোর্ট পাওয়া যায়নি', '⚠️');
         }
-        showToast(`⚡ Forced live sync complete! (${data.new_count || 0} new codes)`, '⚡');
       } catch (err) {
-        showToast(`Force fetch error: ${err}`, '❌');
+        showToast(`সার্চে সমস্যা: ${err}`, '❌');
       } finally {
-        btnForce.innerHTML = '⚡ Force Fetch Now';
-        btnForce.disabled = false;
+        isFetching = false;
+        btnHeroForce.classList.remove('fetching');
+        btnHeroText.innerHTML = 'FORCE FETCH NOW (১ সেকেন্ডে রিফ্রেশ)';
+        btnStickyForce.classList.remove('fetching');
+        btnStickyText.innerHTML = 'FORCE FETCH';
       }
+    }
+
+    // Attach listeners
+    btnHeroForce.addEventListener('click', triggerForceFetch);
+    btnStickyForce.addEventListener('click', triggerForceFetch);
+
+    // Keyword update
+    function applyKeyword(kw) {
+      currentKeyword = kw;
+      kwInput.value = kw;
+      badgeKwText.textContent = kw || 'All';
+      document.querySelectorAll('.toggle-chip').forEach(ch => {
+        ch.classList.toggle('active', ch.getAttribute('data-kw') === kw);
+      });
+      triggerForceFetch();
+    }
+
+    document.getElementById('btn-save-kw').addEventListener('click', () => {
+      applyKeyword(kwInput.value.trim());
     });
 
-    document.getElementById('btn-apply-keyword').addEventListener('click', () => setKeyword(keywordInput.value.trim(), false));
-    document.getElementById('btn-save-default').addEventListener('click', () => setKeyword(keywordInput.value.trim(), true));
-    document.getElementById('btn-clear-keyword').addEventListener('click', () => setKeyword('', false));
-
-    keywordInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') setKeyword(keywordInput.value.trim(), false);
+    kwInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') applyKeyword(kwInput.value.trim());
     });
 
-    document.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => setKeyword(chip.getAttribute('data-kw'), false));
+    document.querySelectorAll('.toggle-chip').forEach(ch => {
+      ch.addEventListener('click', () => {
+        applyKeyword(ch.getAttribute('data-kw'));
+      });
     });
 
-    const btnSound = document.getElementById('btn-sound');
-    btnSound.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      btnSound.classList.toggle('active', soundEnabled);
-      btnSound.textContent = soundEnabled ? '🔔 Sound: ON' : '🔕 Sound: OFF';
-    });
-
-    const btnAutoCopyNum = document.getElementById('btn-autocopy-num');
-    btnAutoCopyNum.addEventListener('click', () => {
-      autoCopyNumber = !autoCopyNumber;
-      btnAutoCopyNum.classList.toggle('active', autoCopyNumber);
-      if (autoCopyNumber && autoCopyOtp) {
-        autoCopyOtp = false;
-        btnAutoCopyOtp.classList.remove('active');
-      }
-    });
-
-    const btnAutoCopyOtp = document.getElementById('btn-autocopy-otp');
-    btnAutoCopyOtp.addEventListener('click', () => {
+    // Auto-Copy Toggle
+    function toggleAutoCopy() {
       autoCopyOtp = !autoCopyOtp;
-      btnAutoCopyOtp.classList.toggle('active', autoCopyOtp);
-      if (autoCopyOtp && autoCopyNumber) {
-        autoCopyNumber = false;
-        btnAutoCopyNum.classList.remove('active');
-      }
-    });
+      btnAutoCopyToggle.classList.toggle('active', autoCopyOtp);
+      btnAutoCopyToggle.textContent = autoCopyOtp ? '📋 Auto-Copy OTP: ON' : '📋 Auto-Copy OTP: OFF';
+      btnStickyAutoCopy.classList.toggle('active', autoCopyOtp);
+      showToast(autoCopyOtp ? 'Auto-Copy OTP ON' : 'Auto-Copy OFF');
+      triggerVibrate([30]);
+    }
+    btnAutoCopyToggle.addEventListener('click', toggleAutoCopy);
+    btnStickyAutoCopy.addEventListener('click', toggleAutoCopy);
 
-    const btnViewCards = document.getElementById('btn-view-cards');
-    const btnViewTable = document.getElementById('btn-view-table');
-    btnViewCards.addEventListener('click', () => {
-      btnViewCards.classList.add('active');
-      btnViewTable.classList.remove('active');
-      feedContainer.style.display = 'flex';
-      tableWrap.style.display = 'none';
-    });
-    btnViewTable.addEventListener('click', () => {
-      btnViewTable.classList.add('active');
-      btnViewCards.classList.remove('active');
-      feedContainer.style.display = 'none';
-      tableWrap.style.display = 'block';
-    });
+    // Sound Toggle
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      btnSoundToggle.classList.toggle('active', soundEnabled);
+      btnSoundToggle.textContent = soundEnabled ? '🔔 Sound: ON' : '🔕 Sound: OFF';
+      btnStickySound.classList.toggle('active', soundEnabled);
+      showToast(soundEnabled ? 'Sound ON' : 'Sound OFF');
+      triggerVibrate([30]);
+    }
+    btnSoundToggle.addEventListener('click', toggleSound);
+    btnStickySound.addEventListener('click', toggleSound);
 
-    document.getElementById('btn-clear-feed').addEventListener('click', async () => {
-      records = [];
-      seenSignatures.clear();
-      uniqueCountries.clear();
-      totalOtps = 0;
-      feedContainer.innerHTML = '';
-      tableBody.innerHTML = '';
-      emptyState.style.display = 'block';
-      statTotal.textContent = '0';
-      statOtps.textContent = '0';
-      statCountries.textContent = '0';
-      await fetch('/api/clear', { method: 'POST' });
-      showToast('Feed cleared');
-    });
-
-    document.getElementById('btn-export-csv').addEventListener('click', () => {
-      if (!records.length) return showToast('No records to export!', '⚠️');
-      const header = ["Time", "Country", "CallingCode", "Number", "OTP", "Service", "Message"];
-      const rows = records.map(r => [
-        `"${(r.time || '').replace(/"/g, '""')}"`,
-        `"${(r.country || '').replace(/"/g, '""')}"`,
-        `"${(r.calling_code || '').replace(/"/g, '""')}"`,
-        `"${(r.number || '').replace(/"/g, '""')}"`,
-        `"${(r.otp || '').replace(/"/g, '""')}"`,
-        `"${(r.cli || '').replace(/"/g, '""')}"`,
-        `"${(r.message || '').replace(/"/g, '""')}"`
-      ]);
-      const csvContent = "data:text/csv;charset=utf-8," + [header.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `SMS_Export_${Date.now()}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('CSV exported!', '📥');
-    });
-
-    loadInitialData();
-    connectSSE();
-    startAutoRefreshTimer();
+    // Initial load: trigger quick initial fetch
+    triggerForceFetch();
   </script>
 </body>
 </html>
