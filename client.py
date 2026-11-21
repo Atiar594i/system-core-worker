@@ -92,21 +92,21 @@ class FlexSMSClient:
 
         for attempt in range(1, max_retries + 1):
             try:
-                r = self.session.get(login_page_url, timeout=(3.0, 6.0))
+                r = self.session.get(login_page_url, timeout=(1.5, 3.0))
 
                 if r.status_code == 429:
                     logger.warning(f"[{self.worker_id}] Rate limited (429) on attempt {attempt}.")
-                    time.sleep(1.0)
+                    time.sleep(0.5)
                     self._init_session()
                     continue
 
                 if r.status_code != 200:
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                     continue
 
                 captcha_ans = self.solve_captcha(r.text)
                 if captcha_ans is None:
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                     continue
 
                 payload = {
@@ -118,28 +118,27 @@ class FlexSMSClient:
                 r_post = self.session.post(
                     signin_url,
                     data=payload,
-                    timeout=(3.0, 6.0),
+                    timeout=(1.5, 3.0),
                     allow_redirects=True
                 )
 
                 if "SMSDashboard" in r_post.url or "dashboard" in r_post.text.lower() or r_post.status_code == 200:
-                    r_rep = self.session.get(reports_url, timeout=(3.0, 6.0))
+                    r_rep = self.session.get(reports_url, timeout=(1.5, 3.0))
                     if r_rep.status_code == 200:
                         ajax_match = re.search(r'sAjaxSource":\s*"([^"]+)"', r_rep.text)
                         if ajax_match:
                             self.ajax_url = f"{self.base_url}/agent/{ajax_match.group(1)}"
+                            self.is_logged_in = True
+                            self.rate_limited_until = 0.0
+                            self.consecutive_errors = 0
+                            logger.info(f"[{self.worker_id}] Login successful for {self.username}! Ajax URL: {self.ajax_url}")
+                            return True
 
-                    self.is_logged_in = True
-                    self.rate_limited_until = 0.0
-                    self.consecutive_errors = 0
-                    logger.info(f"[{self.worker_id}] Login successful for {self.username}!")
-                    return True
-                else:
-                    time.sleep(0.3)
+                time.sleep(0.2)
 
             except Exception as e:
                 logger.error(f"[{self.worker_id}] Login error on attempt {attempt}: {e}")
-                time.sleep(0.3)
+                time.sleep(0.2)
 
         self.is_logged_in = False
         return False
@@ -184,7 +183,7 @@ class FlexSMSClient:
 
         try:
             t0 = time.time()
-            res = self.session.get(self.ajax_url, params=params, headers=headers, timeout=(2.0, 4.0))
+            res = self.session.get(self.ajax_url, params=params, headers=headers, timeout=(1.5, 3.0))
             self.last_response_time = time.time() - t0
             self.last_query_time = time.time()
 
