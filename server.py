@@ -46,6 +46,9 @@ recent_records = collections.deque(maxlen=60)
 seen_hashes = {}
 sse_clients = set()
 fetch_lock = asyncio.Lock()
+worker_locks = {}
+last_worker_idx = 0
+last_fetch_cache = {"time": 0.0, "keyword": "", "records": [], "latency_ms": 0}
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DASHBOARD_FILE = os.path.join(CURRENT_DIR, "dashboard.html")
@@ -199,83 +202,97 @@ async def handle_get_records(request):
 
 async def handle_force_fetch(request):
     """
-    ⚡ ULTRA-FAST ON-DEMAND FORCE FETCH (<0.3s)
-    Queries the portal live with keyword and returns the exact fresh reports!
+    ⚡ ULTRA-FAST ON-DEMAND FORCE FETCH WITH DUAL-ENGINE RATE LIMIT IMMUNITY
+    - Instant response (<0.4s)
+    - Strict Round-Robin load balancing between Atiar59_FD and Smswork21_FD
+    - Micro-coalescing guard (if rapid clicks occur <350ms, returns instant 0ms fresh result)
+    - Per-worker locking (prevents Apache/PHP session mutex freezes)
+    - Auto-failover to secondary engine if an account hits cooldown
     """
-    global current_keyword
+    global current_keyword, last_worker_idx, last_fetch_cache
     loop = asyncio.get_running_loop()
 
     kw = request.query.get("keyword", current_keyword).strip() or current_keyword
     limit = int(request.query.get("limit", 20))
+    now = time.time()
 
-    # Pick worker with lowest cooldown
-    worker = min(worker_pool, key=lambda w: w.rate_limited_until)
-    if not worker.is_logged_in:
-        try:
-            await loop.run_in_executor(None, worker.login)
-        except Exception:
-            pass
+    # 1. Micro-coalescing guard: If clicked within 350ms with same keyword,
+    # serve the exact fresh result without hitting the remote portal twice!
+    if (now - last_fetch_cache["time"] < 0.35) and (last_fetch_cache["keyword"] == kw) and last_fetch_cache["records"]:
+        return web.json_response({
+            "success": True,
+            "count": len(last_fetch_cache["records"]),
+            "records": last_fetch_cache["records"],
+            "worker": "coalesced-instant",
+            "latency_ms": 10
+        })
 
     t0 = time.time()
-    logger.info(f"⚡ [Force Fetch] Live querying portal: keyword='{kw}', worker={worker.username}...")
 
-    try:
-        recs = await loop.run_in_executor(None, worker.fetch_records, kw, limit)
-        fetch_ms = int((time.time() - t0) * 1000)
+    # 2. Pick next worker in round-robin sequence that is NOT rate-limited
+    available = [w for w in worker_pool if w.rate_limited_until <= now]
+    if available:
+        last_worker_idx = (last_worker_idx + 1) % len(worker_pool)
+        worker = worker_pool[last_worker_idx]
+        if worker not in available:
+            worker = available[0]
+    else:
+        worker = min(worker_pool, key=lambda w: w.rate_limited_until)
 
-        if recs:
-            recs_sorted = sorted(recs, key=lambda r: str(r.get("time", "")), reverse=True)
-            # Update cache
-            for r in recs_sorted:
-                dedup_key = f"{r.get('time')}|{r.get('number')}|{r.get('message')}"
-                if dedup_key not in seen_hashes:
-                    seen_hashes[dedup_key] = time.time()
-                    recent_records.appendleft(r)
-            return web.json_response({
-                "success": True,
-                "count": len(recs_sorted),
-                "records": recs_sorted,
-                "worker": worker.username,
-                "latency_ms": fetch_ms
-            })
-        else:
-            return web.json_response({
-                "success": True,
-                "count": 0,
-                "records": [],
-                "worker": worker.username,
-                "latency_ms": fetch_ms
-            })
-    except Exception as e:
-        logger.error(f"Force fetch primary failed ({e}). Retrying secondary worker...")
-        try:
-            other_worker = [w for w in worker_pool if w != worker][0]
-            if not other_worker.is_logged_in:
-                await loop.run_in_executor(None, other_worker.login)
-            recs = await loop.run_in_executor(None, other_worker.fetch_records, kw, limit)
-            fetch_ms = int((time.time() - t0) * 1000)
-            recs_sorted = sorted(recs, key=lambda r: str(r.get("time", "")), reverse=True) if recs else []
-            for r in recs_sorted:
-                dedup_key = f"{r.get('time')}|{r.get('number')}|{r.get('message')}"
-                if dedup_key not in seen_hashes:
-                    seen_hashes[dedup_key] = time.time()
-                    recent_records.appendleft(r)
-            return web.json_response({
-                "success": True,
-                "count": len(recs_sorted),
-                "records": recs_sorted,
-                "worker": other_worker.username,
-                "latency_ms": fetch_ms
-            })
-        except Exception as e2:
-            fetch_ms = int((time.time() - t0) * 1000)
-            logger.error(f"Force fetch secondary failed: {e2}")
-            return web.json_response({
-                "success": False,
-                "error": str(e2),
-                "records": list(recent_records)[:limit],
-                "latency_ms": fetch_ms
-            }, status=500)
+    lock = worker_locks.setdefault(worker.username, asyncio.Lock())
+
+    # 3. Perform query with automatic failover to the other engine
+    for attempt in range(len(worker_pool)):
+        async with lock:
+            if not worker.is_logged_in:
+                try:
+                    await loop.run_in_executor(None, worker.login)
+                except Exception:
+                    pass
+
+            try:
+                logger.info(f"⚡ [Force Fetch] Live query: keyword='{kw}', worker={worker.username} (round-robin)")
+                recs = await loop.run_in_executor(None, worker.fetch_records, kw, limit)
+                fetch_ms = int((time.time() - t0) * 1000)
+
+                recs_sorted = sorted(recs, key=lambda r: str(r.get("time", "")), reverse=True) if recs else []
+                for r in recs_sorted:
+                    dedup_key = f"{r.get('time')}|{r.get('number')}|{r.get('message')}"
+                    if dedup_key not in seen_hashes:
+                        seen_hashes[dedup_key] = time.time()
+                        recent_records.appendleft(r)
+
+                # Update micro-cache
+                last_fetch_cache = {
+                    "time": time.time(),
+                    "keyword": kw,
+                    "records": recs_sorted,
+                    "latency_ms": fetch_ms
+                }
+
+                return web.json_response({
+                    "success": True,
+                    "count": len(recs_sorted),
+                    "records": recs_sorted,
+                    "worker": worker.username,
+                    "latency_ms": fetch_ms
+                })
+            except Exception as e:
+                logger.warning(f"Worker {worker.username} failed ({e}), rotating to alternate...")
+                worker.rate_limited_until = time.time() + 1.5
+                other_workers = [w for w in worker_pool if w != worker]
+                if other_workers:
+                    worker = other_workers[0]
+                    lock = worker_locks.setdefault(worker.username, asyncio.Lock())
+
+    # Fallback if both failed
+    fetch_ms = int((time.time() - t0) * 1000)
+    return web.json_response({
+        "success": False,
+        "error": "Engines busy, please try again",
+        "records": list(recent_records)[:limit],
+        "latency_ms": fetch_ms
+    }, status=503)
 
 async def handle_get_status(request):
     return web.json_response({
